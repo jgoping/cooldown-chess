@@ -8,6 +8,10 @@ const io = new Server(server);
 
 const PORT = 8080;
 
+app.get('/', (_req, res) => {
+  res.send('Testing');
+});
+
 io.on('connection', socket => {
   console.log('Connected');
 
