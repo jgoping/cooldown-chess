@@ -14,17 +14,25 @@ app.get('/', (_req, res) => {
 });
 
 const chess = new Chess()
+let playerCount = 0;
+
 io.on('connection', socket => {
   console.log('Connected');
-    socket.emit('Player', chess.fen());
+  if (playerCount < 2) {
+    ++playerCount;
+    socket.emit('Player', playerCount === 1 ? 'w' : 'b');
+    socket.emit('Board', chess.fen());
 
   socket.on('disconnect', () => {
     console.log('Disconnected');
+      --playerCount;
     });
+  }
+  
   // Listen for moves
   socket.on('move', (data) => {
     chess.move({ from: data.sourceSquare, to: data.targetSquare });
-    io.emit('move', chess.fen());
+    io.emit('Board', chess.fen());
     if (chess.game_over()) {
       io.emit('gameOver');
     }
