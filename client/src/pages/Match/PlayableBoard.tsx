@@ -47,6 +47,7 @@ const PlayableBoard = () => {
             width={500}
             position={position}
             onDrop={onDrop}
+            orientation={player === 'w' ? 'white' : 'black'}
           />
 };
 
