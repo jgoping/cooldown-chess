@@ -5,6 +5,7 @@ import socketIOClient, { Socket } from "socket.io-client";
 const ENDPOINT = 'http://127.0.0.1:8080/';
 
 const PlayableBoard = () => {
+  const [player, setPlayer] = React.useState('');
   const [position, setPosition] = React.useState('');
   const [socket, setSocket] = React.useState<Socket | undefined>();
 
@@ -12,10 +13,10 @@ const PlayableBoard = () => {
     const socket = socketIOClient(ENDPOINT, {transports: ['websocket']});;
     setSocket(socket);
     socket.on('Player', data => {
-      setPosition(data);
+      setPlayer(data);
     });
 
-    socket.on('move', data => {
+    socket.on('Board', data => {
       setPosition(data);
     });
 
@@ -28,8 +29,13 @@ const PlayableBoard = () => {
     };
   }, []);
 
-  const onDrop = ({sourceSquare, targetSquare}: { sourceSquare: string; targetSquare: string } ): void => {
-    socket?.emit('move', {sourceSquare, targetSquare});
+
+
+  const onDrop = ({sourceSquare, targetSquare, piece}: { sourceSquare: string; targetSquare: string; piece: string }): void => {
+    const pieceColour = piece[0];
+    if (player === pieceColour) {
+      socket?.emit('move', {sourceSquare, targetSquare});
+    }
   };
 
   return <Chessboard 
