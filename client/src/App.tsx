@@ -1,14 +1,17 @@
-import Match from './pages/Match';
+import { HashRouter as Router, Route } from 'react-router-dom';
 
+import Home from './pages/Home';
+import Match from './pages/Match';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
+    <Router>
       <header className="App-header">
-        <Match />
+        <Route exact path={'/'} component={Home} />
+        <Route path={'/match/:roomId'} component={Match} />
       </header>
-    </div>
+    </Router>
   );
 }
 
