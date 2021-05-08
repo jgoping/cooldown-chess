@@ -4,6 +4,8 @@ import socketIOClient, { Socket } from "socket.io-client";
 
 const ENDPOINT = 'http://127.0.0.1:8080/';
 
+const ROOM = 'test-room';
+
 const PlayableBoard = () => {
   const [player, setPlayer] = React.useState('');
   const [position, setPosition] = React.useState('');
@@ -12,6 +14,9 @@ const PlayableBoard = () => {
   React.useEffect(() => {
     const socket = socketIOClient(ENDPOINT, {transports: ['websocket']});;
     setSocket(socket);
+
+    socket.emit('Room', ROOM);
+
     socket.on('Player', data => {
       setPlayer(data);
     });
