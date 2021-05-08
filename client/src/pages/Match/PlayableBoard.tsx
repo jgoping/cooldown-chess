@@ -12,7 +12,7 @@ const PlayableBoard = () => {
   const [socket, setSocket] = React.useState<Socket | undefined>();
 
   React.useEffect(() => {
-    const socket = socketIOClient(ENDPOINT, {transports: ['websocket']});;
+    const socket = socketIOClient(ENDPOINT, {transports: ['websocket']});
     setSocket(socket);
 
     socket.emit('Room', ROOM);
@@ -25,8 +25,8 @@ const PlayableBoard = () => {
       setPosition(data);
     });
 
-    socket.on('gameOver', () => {
-      console.log('game is over')
+    socket.on('GameOver', () => {
+      console.log('game is over');
     });
 
     return () => {
@@ -39,7 +39,7 @@ const PlayableBoard = () => {
   const onDrop = ({sourceSquare, targetSquare, piece}: { sourceSquare: string; targetSquare: string; piece: string }): void => {
     const pieceColour = piece[0];
     if (player === pieceColour) {
-      socket?.emit('move', {sourceSquare, targetSquare});
+      socket?.emit('Move', {sourceSquare, targetSquare});
     }
   };
 
