@@ -10,7 +10,6 @@ const io = new Server(server);
 
 const PORT = 8080;
 
-
 const roomMap = new Map();
 
 io.on('connection', socket => {
