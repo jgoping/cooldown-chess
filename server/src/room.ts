@@ -1,5 +1,11 @@
-import { Chess } from "chess.js";
+import { Chess, ChessInstance } from "chess.js";
 import { Server, Socket } from "socket.io";
+
+interface PlayerData {
+  colour: string,
+  instance: ChessInstance,
+  oppositeInstance: ChessInstance
+};
 
 class Room {
   chess = new Chess();
