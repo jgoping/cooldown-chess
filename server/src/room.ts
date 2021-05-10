@@ -1,6 +1,8 @@
 import { Chess, ChessInstance } from "chess.js";
 import { Server, Socket } from "socket.io";
 
+import { switchTurn } from './utils';
+
 interface PlayerData {
   colour: string,
   instance: ChessInstance,
@@ -8,9 +10,10 @@ interface PlayerData {
 };
 
 class Room {
-  chess = new Chess();
+  whiteChess = new Chess();
+  blackChess = new Chess(switchTurn(this.whiteChess.fen()));
   io: Server;
-  playerCount = 0;
+  playerMap: Map<Socket, PlayerData> = new Map();
   roomId: string;
 
   constructor(io: Server, roomId: string) {
@@ -18,19 +21,39 @@ class Room {
     this.roomId = roomId;
   }
 
+  addToPlayerMap(socket: Socket): PlayerData {
+    const index = this.playerMap.size;
+    const colour = index === 0 ? 'w' : 'b';
+    const instance = index === 0 ? this.whiteChess : this.blackChess;
+    const oppositeInstance = index === 0 ? this.blackChess : this.whiteChess;
+
+    const player = { colour, instance, oppositeInstance };
+
+    this.playerMap.set(socket, player);
+
+    return player;
+  }
+
   addPlayer(socket: Socket) {
-    if (this.playerCount < 2) {
+    if (this.playerMap.size < 2) {
       socket.join(this.roomId);
 
-      ++this.playerCount;
-      socket.emit('Player', this.playerCount === 1 ? 'w' : 'b');
-      socket.emit('Board', this.chess.fen());
+      const playerData = this.addToPlayerMap(socket);
+
+      socket.emit('Player', playerData.colour);
+      socket.emit('Board', playerData.instance.fen());
 
       socket.on('Move', (data) => {
-        this.chess.move({ from: data.sourceSquare, to: data.targetSquare });
-        this.io.to(this.roomId).emit('Board', this.chess.fen());
-        if (this.chess.game_over()) {
-          this.io.to(this.roomId).emit('GameOver');
+        const result = playerData.instance.move({ from: data.sourceSquare, to: data.targetSquare });
+
+        if (result) {
+          const curFen = playerData.instance.fen();
+
+          playerData.instance.load(switchTurn(curFen));
+          playerData.oppositeInstance.load(curFen);
+          
+          socket.emit('Board', playerData.instance.fen());
+          socket.to(this.roomId).emit('Board', playerData.oppositeInstance.fen());
         }
       });
     }
