@@ -11,6 +11,10 @@ class PlayerTimer {
       console.log(`timeLeft: ${this.timeLeft}`);
     }, 1000);
   }
+
+  canMove(): boolean {
+    return this.timeLeft === 0;
+  }
 };
 
 export default PlayerTimer;

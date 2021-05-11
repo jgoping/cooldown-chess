@@ -1,12 +1,14 @@
 import { Chess, ChessInstance } from "chess.js";
 import { Server, Socket } from "socket.io";
 
+import PlayerTimer from './playerTimer';
 import { switchTurn } from './utils';
 
 interface PlayerData {
   colour: string,
   instance: ChessInstance,
-  oppositeInstance: ChessInstance
+  oppositeInstance: ChessInstance,
+  timer: PlayerTimer
 };
 
 class Room {
@@ -26,8 +28,9 @@ class Room {
     const colour = index === 0 ? 'w' : 'b';
     const instance = index === 0 ? this.whiteChess : this.blackChess;
     const oppositeInstance = index === 0 ? this.blackChess : this.whiteChess;
+    const timer = new PlayerTimer();
 
-    const player = { colour, instance, oppositeInstance };
+    const player = { colour, instance, oppositeInstance, timer };
 
     this.playerMap.set(socket, player);
 
@@ -44,9 +47,11 @@ class Room {
       socket.emit('Board', playerData.instance.fen());
 
       socket.on('Move', (data) => {
+        if (playerData.timer.canMove()) {
         const result = playerData.instance.move({ from: data.sourceSquare, to: data.targetSquare });
 
         if (result) {
+            playerData.timer.start();
           const curFen = playerData.instance.fen();
 
           playerData.instance.load(switchTurn(curFen));
