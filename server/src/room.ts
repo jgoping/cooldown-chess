@@ -28,7 +28,7 @@ class Room {
     const colour = index === 0 ? 'w' : 'b';
     const instance = index === 0 ? this.whiteChess : this.blackChess;
     const oppositeInstance = index === 0 ? this.blackChess : this.whiteChess;
-    const timer = new PlayerTimer();
+    const timer = new PlayerTimer(colour, this.io, this.roomId);
 
     const player = { colour, instance, oppositeInstance, timer };
 
@@ -48,17 +48,18 @@ class Room {
 
       socket.on('Move', (data) => {
         if (playerData.timer.canMove()) {
-        const result = playerData.instance.move({ from: data.sourceSquare, to: data.targetSquare });
+          const result = playerData.instance.move({ from: data.sourceSquare, to: data.targetSquare });
 
-        if (result) {
+          if (result) {
             playerData.timer.start();
-          const curFen = playerData.instance.fen();
+            const curFen = playerData.instance.fen();
 
-          playerData.instance.load(switchTurn(curFen));
-          playerData.oppositeInstance.load(curFen);
-          
-          socket.emit('Board', playerData.instance.fen());
-          socket.to(this.roomId).emit('Board', playerData.oppositeInstance.fen());
+            playerData.instance.load(switchTurn(curFen));
+            playerData.oppositeInstance.load(curFen);
+
+            socket.emit('Board', playerData.instance.fen());
+            socket.to(this.roomId).emit('Board', playerData.oppositeInstance.fen());
+          }
         }
       });
     }
