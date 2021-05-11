@@ -1,19 +1,21 @@
 import { Server } from 'socket.io';
 
 class PlayerTimer {
+  cooldown: number;
   colour: string;
   io: Server;
   roomId: string;
   timeLeft = 0;
 
-  constructor(colour: string, io: Server, roomId: string) {
+  constructor(colour: string, io: Server, roomId: string, cooldown?: number) {
     this.colour = colour;
     this.io = io;
     this.roomId = roomId;
+    this.cooldown = cooldown ?? 5;
   }
 
   start() {
-    this.timeLeft = 5;
+    this.timeLeft = this.cooldown;
     this.io.to(this.roomId).emit('Time', { colour: this.colour, time: this.timeLeft });
 
     let timer = setInterval(() => {
