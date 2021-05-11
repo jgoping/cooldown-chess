@@ -1,4 +1,4 @@
-import Chessboard from 'chessboardjsx';
+import Chessboard, { Piece } from 'chessboardjsx';
 import React from 'react';
 import socketIOClient, { Socket } from "socket.io-client";
 
@@ -48,6 +48,11 @@ const PlayableBoard: React.FC<PlayableBoardProps> = ({ roomId }) => {
     player === colour ? setPlayerTimer(time) : setOpponentTimer(time);
   }
 
+  const allowDrag = ({ piece }: { piece: Piece }) => {
+    const pieceColour = piece[0];
+    return player === pieceColour;
+  }
+
   const onDrop = ({sourceSquare, targetSquare, piece}: { sourceSquare: string; targetSquare: string; piece: string }): void => {
     const pieceColour = piece[0];
     if (player === pieceColour) {
@@ -60,6 +65,7 @@ const PlayableBoard: React.FC<PlayableBoardProps> = ({ roomId }) => {
     <Chessboard 
       width={500}
       position={position}
+      allowDrag={(allowDrag)}
       onDrop={onDrop}
       orientation={player === 'w' ? 'white' : 'black'}
     />
