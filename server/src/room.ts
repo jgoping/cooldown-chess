@@ -48,6 +48,10 @@ class Room {
       socket.emit('Player', playerData.colour);
       socket.emit('Board', playerData.instance.fen());
 
+      if (this.playerMap.size === 2) {
+        this.io.to(this.roomId).emit('Begin');
+      }
+
       socket.on('Move', (data) => {
         if (playerData.timer.canMove()) {
           const result = playerData.instance.move({ from: data.sourceSquare, to: data.targetSquare });
