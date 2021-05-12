@@ -19,16 +19,25 @@ class PlayerTimer {
     this.io.to(this.roomId).emit('Time', { colour: this.colour, time: this.timeLeft });
 
     let timer = setInterval(() => {
-      --this.timeLeft;
+      if (this.timeLeft > 0) {
+        --this.timeLeft;
+      }
+
       if (this.timeLeft <= 0) {
         clearInterval(timer);
       }
+
       this.io.to(this.roomId).emit('Time', { colour: this.colour, time: this.timeLeft });
     }, 1000);
   }
 
   canMove(): boolean {
-    return this.timeLeft === 0;
+    return this.timeLeft <= 0;
+  }
+
+  reset() {
+    this.timeLeft = 0;
+    this.io.to(this.roomId).emit('Time', { colour: this.colour, time: this.timeLeft });
   }
 };
 
