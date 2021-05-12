@@ -15,6 +15,7 @@ class Room {
   whiteChess = new Chess();
   blackChess = new Chess(switchTurn(this.whiteChess.fen()));
   cooldown?: number;
+  gameInProgress = false;
   io: Server;
   playerMap: Map<Socket, PlayerData> = new Map();
   roomId: string;
@@ -67,11 +68,11 @@ class Room {
       socket.emit('Board', playerData.instance.fen());
 
       if (this.playerMap.size === 2) {
-        this.io.to(this.roomId).emit('Begin');
+        this.startGame();
       }
 
       socket.on('Move', (data) => {
-        if (playerData.timer.canMove()) {
+        if (this.gameInProgress && playerData.timer.canMove()) {
           const result = playerData.instance.move({ from: data.sourceSquare, to: data.targetSquare });
 
           if (result) {
@@ -83,6 +84,7 @@ class Room {
 
             const gameOverData = this.checkGameOver();
             if (gameOverData.gameOver) {
+              this.gameInProgress = false;
               this.io.to(this.roomId).emit('GameOver', gameOverData.winner);
             }
 
@@ -91,6 +93,28 @@ class Room {
           }
         }
       });
+
+      socket.on('NewGame', () => {
+        if (!this.gameInProgress) {
+          this.resetGame();
+          this.startGame();
+        }
+      });
+    }
+  }
+
+  startGame() {
+    this.gameInProgress = true;
+    this.io.to(this.roomId).emit('Begin');
+  }
+
+  resetGame() {
+    this.whiteChess.reset();
+    this.blackChess.load(switchTurn(this.whiteChess.fen()));
+
+    for (const [socket, playerData] of this.playerMap.entries()) {
+      playerData.timer.reset();
+      socket.emit('Board', playerData.instance.fen());
     }
   }
 }
