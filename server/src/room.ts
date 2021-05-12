@@ -39,6 +39,24 @@ class Room {
     return player;
   }
 
+  checkGameOver() {
+    const board = this.whiteChess.board();
+    let containsWhiteKing = false;
+    let containsBlackKing = false;
+    board.forEach((row) => {
+      row.forEach((square) => {
+        if (square && square.type === 'k') {
+          square.color === 'w' ? containsWhiteKing = true : containsBlackKing = true;
+        }
+      })
+    });
+
+    return {
+      gameOver: !containsWhiteKing || !containsBlackKing,
+      winner: containsWhiteKing ? 'w' : 'b'
+    };
+  }
+
   addPlayer(socket: Socket) {
     if (this.playerMap.size < 2) {
       socket.join(this.roomId);
@@ -62,6 +80,11 @@ class Room {
 
             playerData.instance.load(switchTurn(curFen));
             playerData.oppositeInstance.load(curFen);
+
+            const gameOverData = this.checkGameOver();
+            if (gameOverData.gameOver) {
+              this.io.to(this.roomId).emit('GameOver', gameOverData.winner);
+            }
 
             socket.emit('Board', playerData.instance.fen());
             socket.to(this.roomId).emit('Board', playerData.oppositeInstance.fen());
