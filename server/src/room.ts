@@ -14,13 +14,15 @@ interface PlayerData {
 class Room {
   whiteChess = new Chess();
   blackChess = new Chess(switchTurn(this.whiteChess.fen()));
+  cooldown?: number;
   io: Server;
   playerMap: Map<Socket, PlayerData> = new Map();
   roomId: string;
 
-  constructor(io: Server, roomId: string) {
+  constructor(io: Server, roomId: string, cooldown?: number) {
     this.io = io;
     this.roomId = roomId;
+    this.cooldown = cooldown;
   }
 
   addToPlayerMap(socket: Socket): PlayerData {
@@ -28,7 +30,7 @@ class Room {
     const colour = index === 0 ? 'w' : 'b';
     const instance = index === 0 ? this.whiteChess : this.blackChess;
     const oppositeInstance = index === 0 ? this.blackChess : this.whiteChess;
-    const timer = new PlayerTimer(colour, this.io, this.roomId);
+    const timer = new PlayerTimer(colour, this.io, this.roomId, this.cooldown);
 
     const player = { colour, instance, oppositeInstance, timer };
 
