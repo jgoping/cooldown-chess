@@ -46,12 +46,12 @@ const PlayableBoard: React.FC<PlayableBoardProps> = ({ roomId }) => {
 
   const updateTimer = ({ colour, time }: { colour: string, time: number}) => {
     player === colour ? setPlayerTimer(time) : setOpponentTimer(time);
-  }
+  };
 
   const allowDrag = ({ piece }: { piece: Piece }) => {
     const pieceColour = piece[0];
     return player === pieceColour;
-  }
+  };
 
   const onDrop = ({sourceSquare, targetSquare, piece}: { sourceSquare: string; targetSquare: string; piece: string }): void => {
     const pieceColour = piece[0];
