@@ -2,7 +2,9 @@ import socketIOClient, { Socket } from "socket.io-client";
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
+import GameOverModal from './GameOverModal';
 import PlayableBoard from './PlayableBoard';
+import WaitingModal from './WaitingModal';
 
 const ENDPOINT = 'http://127.0.0.1:8080/';
 
@@ -15,6 +17,8 @@ const Match = () => {
   const [player, setPlayer] = React.useState('');
   const [winner, setWinner] = React.useState('');
   const [position, setPosition] = React.useState('');
+  const [waitingModalOpen, setWaitingModalOpen] = React.useState(true);
+  const [gameOverModalOpen, setGameOverModalOpen] = React.useState(false);
   const { roomId } = useParams<ParamTypes>();
   const [playerTimer, setPlayerTimer] = React.useState(0);
   const [opponentTimer, setOpponentTimer] = React.useState(0);
@@ -63,6 +67,8 @@ const Match = () => {
       <p>
         Cooldown Chess
       </p>
+      <WaitingModal open={waitingModalOpen} roomId={roomId} />
+      <GameOverModal open={gameOverModalOpen} winner={winner} />
       <PlayableBoard socket={socket} player={player} position={position} />
       <div>{opponentTimer}</div>
       <div>{playerTimer}</div>
