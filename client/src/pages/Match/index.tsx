@@ -35,6 +35,7 @@ const Match = () => {
 
     socket.on('Begin', () => {
       setWaitingModalOpen(false);
+      setGameOverModalOpen(false);
     });
 
     socket.on('Board', data => {
@@ -61,6 +62,10 @@ const Match = () => {
   const updateTimer = ({ colour, time }: { colour: string, time: number}) => {
     player === colour ? setPlayerTimer(time) : setOpponentTimer(time);
   };
+
+  const newGameCallback = () => {
+    socket?.emit('NewGame');
+  };
   
   return (
     <>
@@ -68,7 +73,7 @@ const Match = () => {
         Cooldown Chess
       </p>
       <WaitingModal open={waitingModalOpen} roomId={roomId} />
-      <GameOverModal open={gameOverModalOpen} winner={winner} />
+      <GameOverModal open={gameOverModalOpen} winner={winner} newGameCallback={newGameCallback} />
       <PlayableBoard socket={socket} player={player} position={position} />
       <div>{opponentTimer}</div>
       <div>{playerTimer}</div>
