@@ -59,9 +59,9 @@ class Room {
   }
 
   addPlayer(socket: Socket) {
-    if (this.playerMap.size < 2) {
-      socket.join(this.roomId);
+    socket.join(this.roomId);
 
+    if (this.playerMap.size < 2) {
       const playerData = this.addToPlayerMap(socket);
 
       socket.emit('Player', playerData.colour);
@@ -100,6 +100,9 @@ class Room {
           this.startGame();
         }
       });
+    } else {
+      socket.emit('Spectator');
+      socket.emit('Board', this.whiteChess.fen());
     }
   }
 
@@ -114,7 +117,8 @@ class Room {
 
     for (const [socket, playerData] of this.playerMap.entries()) {
       playerData.timer.reset();
-      socket.emit('Board', playerData.instance.fen());
+      playerData.colour === 'b' ? socket.emit('Board', playerData.instance.fen())
+                                : this.io.to(this.roomId).emit('Board', this.whiteChess.fen());
     }
   }
 }
