@@ -5,26 +5,21 @@ import Modal from './MatchModal';
 import ModalContent from './ModalContent';
 
 interface GameOverModalProps {
-  open: boolean;
   winner: string;
   newGameCallback: () => void;
 };
 
-const onClick = (newGameCallback: () => void) => {
-  newGameCallback();
-};
-
-const GameOverModal: React.FC<GameOverModalProps> = ({ open, winner, newGameCallback }) => {
+const GameOverModal: React.FC<GameOverModalProps> = ({ winner, newGameCallback }) => {
   const winnerText = winner === 'w' ? 'White' : 'Black';
 
   return (
     <Modal
-      open={open}
+      open={true}
     >
-      <Fade in={open}>
+      <Fade in={true}>
         <ModalContent>
           <div>Game Over! {winnerText} wins!</div>
-          <button type="button" onClick={() => onClick(newGameCallback)}>Rematch</button>
+          <button type="button" onClick={newGameCallback}>Rematch</button>
         </ModalContent>
       </Fade>
     </Modal>

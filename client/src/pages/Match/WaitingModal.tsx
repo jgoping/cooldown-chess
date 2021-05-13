@@ -6,16 +6,15 @@ import ModalContent from './ModalContent';
 import RoomLink from './RoomLink';
 
 interface WaitingModalProps {
-  open: boolean;
   roomId: string;
 };
 
-const WaitingModal: React.FC<WaitingModalProps> = ({ open, roomId }) => {
+const WaitingModal: React.FC<WaitingModalProps> = ({ roomId }) => {
   return (
     <Modal
-      open={open}
+      open={true}
     >
-      <Fade in={open}>
+      <Fade in={true}>
         <ModalContent>
           <div>Send this link to your opponent:</div>
           <RoomLink

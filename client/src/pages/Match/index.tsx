@@ -12,13 +12,18 @@ interface ParamTypes {
   roomId: string;
 }
 
+enum ModalTypes {
+  None,
+  Waiting,
+  GameOver,
+};
+
 const Match = () => {
   const [socket, setSocket] = React.useState<Socket | undefined>();
   const [player, setPlayer] = React.useState('');
   const [winner, setWinner] = React.useState('');
   const [position, setPosition] = React.useState('');
-  const [waitingModalOpen, setWaitingModalOpen] = React.useState(true);
-  const [gameOverModalOpen, setGameOverModalOpen] = React.useState(false);
+  const [modalType, setModalType] = React.useState(ModalTypes.None);
   const { roomId } = useParams<ParamTypes>();
   const [playerTimer, setPlayerTimer] = React.useState(0);
   const [opponentTimer, setOpponentTimer] = React.useState(0);
@@ -30,6 +35,7 @@ const Match = () => {
     socket.emit('Room', roomId);
 
     socket.on('Player', data => {
+      setModalType(ModalTypes.Waiting);
       setPlayer(data);
     });
 
@@ -42,17 +48,25 @@ const Match = () => {
       setPosition(data);
     });
 
-    socket.on('GameOver', data => {
-      setGameOverModalOpen(true);
-      setWinner(data);
-    });
-
     return () => {
       socket.disconnect();
     };
   }, []);
 
   React.useEffect(() => {
+    socket?.on('Begin', () => {
+      if (player) {
+        setModalType(ModalTypes.None);
+      }
+    });
+
+    socket?.on('GameOver', data => {
+      if (player) {
+        setModalType(ModalTypes.GameOver);
+      }
+      setWinner(data);
+    });
+
     socket?.on('Time', data => {
       updateTimer(data);
     });
@@ -72,8 +86,12 @@ const Match = () => {
       <p>
         Cooldown Chess
       </p>
-      <WaitingModal open={waitingModalOpen} roomId={roomId} />
-      <GameOverModal open={gameOverModalOpen} winner={winner} newGameCallback={newGameCallback} />
+      {modalType === ModalTypes.Waiting && (
+        <WaitingModal roomId={roomId} />
+      )}
+      {modalType === ModalTypes.GameOver && (
+        <GameOverModal winner={winner} newGameCallback={newGameCallback} />
+      )}
       <PlayableBoard socket={socket} player={player} position={position} />
       <div>{opponentTimer}</div>
       <div>{playerTimer}</div>
