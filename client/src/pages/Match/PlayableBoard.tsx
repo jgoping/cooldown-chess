@@ -28,7 +28,7 @@ const PlayableBoard: React.FC<PlayableBoardProps> = ({ socket, player, position 
       position={position}
       allowDrag={(allowDrag)}
       onDrop={onDrop}
-      orientation={player === 'w' ? 'white' : 'black'}
+      orientation={player !== 'b' ? 'white' : 'black'}
     />
   </>
   );

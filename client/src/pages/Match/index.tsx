@@ -5,6 +5,7 @@ import { useParams } from 'react-router-dom';
 import GameOverModal from './GameOverModal';
 import PlayableBoard from './PlayableBoard';
 import WaitingModal from './WaitingModal';
+import SpectatorModal from "./SpectatorModal";
 
 const ENDPOINT = 'http://127.0.0.1:8080/';
 
@@ -16,6 +17,7 @@ enum ModalTypes {
   None,
   Waiting,
   GameOver,
+  Spectator
 };
 
 const Match = () => {
@@ -39,9 +41,12 @@ const Match = () => {
       setPlayer(data);
     });
 
-    socket.on('Begin', () => {
-      setWaitingModalOpen(false);
-      setGameOverModalOpen(false);
+    socket.on('Spectator', () => {
+      setModalType(ModalTypes.Spectator);
+
+      socket.on('Time', data => {
+        updateTimer(data);
+      });
     });
 
     socket.on('Board', data => {
@@ -74,11 +79,16 @@ const Match = () => {
 
   
   const updateTimer = ({ colour, time }: { colour: string, time: number}) => {
-    player === colour ? setPlayerTimer(time) : setOpponentTimer(time);
+    const side = player.length > 0 ? player : 'w';
+    side === colour ? setPlayerTimer(time) : setOpponentTimer(time);
   };
 
   const newGameCallback = () => {
     socket?.emit('NewGame');
+  };
+
+  const dismissCallback = () => {
+    setModalType(ModalTypes.None);
   };
   
   return (
@@ -92,6 +102,10 @@ const Match = () => {
       {modalType === ModalTypes.GameOver && (
         <GameOverModal winner={winner} newGameCallback={newGameCallback} />
       )}
+      {modalType === ModalTypes.Spectator && (
+        <SpectatorModal dismissCallback={dismissCallback} />
+      )}
+      
       <PlayableBoard socket={socket} player={player} position={position} />
       <div>{opponentTimer}</div>
       <div>{playerTimer}</div>
