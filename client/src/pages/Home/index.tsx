@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 
+import Logo from './logo';
+import logoSrc from './logo.png';
+
 interface CreateRoomResponse {
   roomId: string;
 };
@@ -17,6 +20,7 @@ export const Home = (props: any) => {
 
   return (
     <>
+      <Logo src={logoSrc}/>
       <div>Home Page</div>
       <button type="button" onClick={onClick}>Create Room</button>
     </>
