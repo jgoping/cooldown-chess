@@ -1,3 +1,4 @@
+import Button from '@material-ui/core/Button';
 import Fade from '@material-ui/core/Fade';
 import React from 'react';
 
@@ -16,7 +17,7 @@ const SpectatorModal: React.FC<SpectatorModalProps> = ({ dismissCallback }) => {
       <Fade in={true}>
         <ModalContent>
           <div>You have joined in spectator mode as two players have already joined this room.</div>
-          <button type="button" onClick={dismissCallback}>Okay</button>
+          <Button variant="contained" onClick={dismissCallback}>Okay</Button>
         </ModalContent>
       </Fade>
     </Modal>

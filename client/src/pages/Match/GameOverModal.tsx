@@ -1,3 +1,4 @@
+import Button from '@material-ui/core/Button';
 import Fade from '@material-ui/core/Fade';
 import React from 'react';
 
@@ -19,7 +20,7 @@ const GameOverModal: React.FC<GameOverModalProps> = ({ winner, newGameCallback }
       <Fade in={true}>
         <ModalContent>
           <div>Game Over! {winnerText} wins!</div>
-          <button type="button" onClick={newGameCallback}>Rematch</button>
+          <Button variant="contained" onClick={newGameCallback}>Rematch</Button>
         </ModalContent>
       </Fade>
     </Modal>
