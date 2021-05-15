@@ -100,6 +100,13 @@ class Room {
           this.startGame();
         }
       });
+
+      socket.on('Surrender', () => {
+        if (this.gameInProgress) {
+          this.gameInProgress = false;
+          this.io.to(this.roomId).emit('GameOver', playerData.colour !== 'w' ? 'w' : 'b');
+        }
+      });
     } else {
       socket.emit('Spectator');
       socket.emit('Board', this.whiteChess.fen());
