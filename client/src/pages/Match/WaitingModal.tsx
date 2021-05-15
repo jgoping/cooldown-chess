@@ -1,8 +1,10 @@
 import Fade from '@material-ui/core/Fade';
 import React from 'react';
 
+import HomeButton from './HomeButton';
 import Modal from './MatchModal';
 import ModalContent from './ModalContent';
+import ModalFooter from './ModalFooter';
 import RoomLink from './RoomLink';
 
 interface WaitingModalProps {
@@ -27,6 +29,10 @@ const WaitingModal: React.FC<WaitingModalProps> = ({ roomId }) => {
             }}
           />
           <div>Waiting for opponent to join...</div>
+
+          <ModalFooter>
+            <HomeButton />
+          </ModalFooter>
         </ModalContent>
       </Fade>
     </Modal>

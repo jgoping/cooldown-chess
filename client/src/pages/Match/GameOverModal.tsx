@@ -2,8 +2,10 @@ import Button from '@material-ui/core/Button';
 import Fade from '@material-ui/core/Fade';
 import React from 'react';
 
+import HomeButton from './HomeButton';
 import Modal from './MatchModal';
 import ModalContent from './ModalContent';
+import ModalFooter from './ModalFooter';
 
 interface GameOverModalProps {
   winner: string;
@@ -20,7 +22,10 @@ const GameOverModal: React.FC<GameOverModalProps> = ({ winner, newGameCallback }
       <Fade in={true}>
         <ModalContent>
           <div>Game Over! {winnerText} wins!</div>
-          <Button variant="contained" onClick={newGameCallback}>Rematch</Button>
+          <ModalFooter>
+            <Button variant="contained" onClick={newGameCallback}>Rematch</Button>
+            <HomeButton />
+          </ModalFooter>
         </ModalContent>
       </Fade>
     </Modal>
