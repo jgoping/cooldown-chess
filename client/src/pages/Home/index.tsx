@@ -54,6 +54,7 @@ export const Home = (props: any) => {
               onChange={handleChange}
               label="Cooldown"
             >
+              <MenuItem value={1}>1</MenuItem>
               <MenuItem value={3}>3</MenuItem>
               <MenuItem value={5}>5</MenuItem>
               <MenuItem value={10}>10</MenuItem>
