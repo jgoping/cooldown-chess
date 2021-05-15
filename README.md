@@ -5,6 +5,8 @@ Cooldown Chess is a chess variation that makes the game real-time. Instead of be
 
 This project was made using React for the client-side and Express.js for the server-side, with Socket.io sending data between the two.
 
+You can try the game here: http://justingoping.com/cooldown-chess
+
 ## How to set up
 Ensure you have `nodejs` and `npm/yarn` installed.
 
