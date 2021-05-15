@@ -1,3 +1,4 @@
+import Button from '@material-ui/core/Button';
 import socketIOClient, { Socket } from "socket.io-client";
 import React from 'react';
 import { useParams } from 'react-router-dom';
@@ -96,6 +97,10 @@ const Match = () => {
   const dismissCallback = () => {
     setModalType(ModalTypes.None);
   };
+
+  const onSurrender = () => {
+    socket?.emit('Surrender');
+  };
   
   return (
     <>
@@ -114,10 +119,11 @@ const Match = () => {
       {modalType === ModalTypes.Spectator && (
         <SpectatorModal dismissCallback={dismissCallback} />
       )}
-      
-      <PlayableBoard socket={socket} player={player} position={position} />
+
       <div>{opponentTimer}</div>
+      <PlayableBoard socket={socket} player={player} position={position} />
       <div>{playerTimer}</div>
+      <Button variant="contained" onClick={onSurrender}>Surrender</Button>
     </>
   );
 };
