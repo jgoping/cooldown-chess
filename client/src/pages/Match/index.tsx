@@ -40,8 +40,10 @@ const Match = () => {
     socket.emit('Room', roomId);
 
     socket.on('Player', data => {
-      setModalType(ModalTypes.Waiting);
-      setPlayer(data);
+      if (!data.bothConnected) {
+        setModalType(ModalTypes.Waiting);
+      }
+      setPlayer(data.colour);
     });
 
     socket.on('Spectator', () => {
