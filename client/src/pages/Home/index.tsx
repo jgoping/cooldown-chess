@@ -31,7 +31,7 @@ export const Home = (props: any) => {
       cooldown
     };
 
-    const { data: { roomId } } = await axios.get<CreateRoomResponse>('http://127.0.0.1:8080/create-room', { params });
+    const { data: { roomId } } = await axios.get<CreateRoomResponse>(`${process.env.REACT_APP_SERVER_ENDPOINT}/create-room`, { params });
     props.history.push(`/match/${roomId}`);
   };
 

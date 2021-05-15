@@ -23,7 +23,7 @@ const WaitingModal: React.FC<WaitingModalProps> = ({ roomId }) => {
             id="standard-basic"
             label="Room ID"
             variant="filled"
-            defaultValue={`http://localhost:3000/#/match/${roomId}`}
+            defaultValue={`${process.env.REACT_APP_CLIENT_ENDPOINT}/#/match/${roomId}`}
             InputProps={{
               readOnly: true,
             }}

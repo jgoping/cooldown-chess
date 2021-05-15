@@ -10,8 +10,6 @@ import SpectatorModal from "./SpectatorModal";
 import StartingModal from "./StartingModal";
 import ColouredText from './ColouredText';
 
-const ENDPOINT = 'http://127.0.0.1:8080/';
-
 interface ParamTypes {
   roomId: string;
 }
@@ -36,7 +34,8 @@ const Match = () => {
   const [countdown, setCountdown] = React.useState(0);
 
   React.useEffect(() => {
-    const socket = socketIOClient(ENDPOINT, {transports: ['websocket']});
+    const serverEndpoint = process.env.REACT_APP_SERVER_ENDPOINT ?? '';
+    const socket = socketIOClient(serverEndpoint, {transports: ['websocket']});
     setSocket(socket);
 
     socket.emit('Room', roomId);
