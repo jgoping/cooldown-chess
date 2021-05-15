@@ -107,8 +107,18 @@ class Room {
   }
 
   startGame() {
-    this.gameInProgress = true;
-    this.io.to(this.roomId).emit('Begin');
+    let countdown = 5;
+    this.io.to(this.roomId).emit('Begin', countdown);
+
+    let timer = setInterval(() => {
+      --countdown;
+      this.io.to(this.roomId).emit('Begin', countdown);
+
+      if (countdown <= 0) {
+        clearInterval(timer);
+        this.gameInProgress = true;
+      }
+    }, 1000);
   }
 
   resetGame() {
