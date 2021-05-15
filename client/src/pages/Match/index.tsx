@@ -8,6 +8,7 @@ import PlayableBoard from './PlayableBoard';
 import WaitingModal from './WaitingModal';
 import SpectatorModal from "./SpectatorModal";
 import StartingModal from "./StartingModal";
+import ColouredText from './ColouredText';
 
 const ENDPOINT = 'http://127.0.0.1:8080/';
 
@@ -120,9 +121,9 @@ const Match = () => {
         <SpectatorModal dismissCallback={dismissCallback} />
       )}
 
-      <div>{opponentTimer}</div>
+      <div>Opponent's cooldown: <ColouredText colour={!opponentTimer ? 'green' : 'red'}>{opponentTimer}</ColouredText></div>
       <PlayableBoard socket={socket} player={player} position={position} />
-      <div>{playerTimer}</div>
+      <div>Your cooldown: <ColouredText colour={!playerTimer ? 'green' : 'red'}>{playerTimer}</ColouredText></div>
       <Button variant="contained" onClick={onSurrender}>Surrender</Button>
     </>
   );
