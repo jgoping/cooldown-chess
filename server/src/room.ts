@@ -64,7 +64,7 @@ class Room {
     if (this.playerMap.size < 2) {
       const playerData = this.addToPlayerMap(socket);
 
-      socket.emit('Player', playerData.colour);
+      socket.emit('Player', { colour: playerData.colour, bothConnected: this.playerMap.size === 2 });
       socket.emit('Board', playerData.instance.fen());
 
       if (this.playerMap.size === 2) {
