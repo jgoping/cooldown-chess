@@ -6,6 +6,7 @@ import GameOverModal from './GameOverModal';
 import PlayableBoard from './PlayableBoard';
 import WaitingModal from './WaitingModal';
 import SpectatorModal from "./SpectatorModal";
+import StartingModal from "./StartingModal";
 
 const ENDPOINT = 'http://127.0.0.1:8080/';
 
@@ -16,6 +17,7 @@ interface ParamTypes {
 enum ModalTypes {
   None,
   Waiting,
+  Starting,
   GameOver,
   Spectator
 };
@@ -29,6 +31,7 @@ const Match = () => {
   const { roomId } = useParams<ParamTypes>();
   const [playerTimer, setPlayerTimer] = React.useState(0);
   const [opponentTimer, setOpponentTimer] = React.useState(0);
+  const [countdown, setCountdown] = React.useState(0);
 
   React.useEffect(() => {
     const socket = socketIOClient(ENDPOINT, {transports: ['websocket']});
@@ -59,9 +62,10 @@ const Match = () => {
   }, []);
 
   React.useEffect(() => {
-    socket?.on('Begin', () => {
+    socket?.on('Begin', data => {
+      setCountdown(data);
       if (player) {
-        setModalType(ModalTypes.None);
+        data > 0 ? setModalType(ModalTypes.Starting) : setModalType(ModalTypes.None);
       }
     });
 
@@ -98,6 +102,9 @@ const Match = () => {
       </p>
       {modalType === ModalTypes.Waiting && (
         <WaitingModal roomId={roomId} />
+      )}
+      {modalType === ModalTypes.Starting && (
+        <StartingModal countdown={countdown} />
       )}
       {modalType === ModalTypes.GameOver && (
         <GameOverModal winner={winner} newGameCallback={newGameCallback} />
