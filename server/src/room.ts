@@ -3,21 +3,33 @@ import { Server, Socket } from "socket.io";
 
 import Player from './player';
 import PlayerTimer from './playerTimer';
-import { checkGameOver, switchTurn } from './utils';
+import { switchTurn } from './utils';
 
 class Room {
   whiteChess = new Chess();
   blackChess = new Chess(switchTurn(this.whiteChess.fen()));
-  cooldown?: number;
+  cooldown: number;
   gameInProgress = false;
   io: Server;
-  playerMap: Map<Socket, PlayerData> = new Map();
+  playerMap: Map<Socket, Player> = new Map();
+  botData?: Player;
   roomId: string;
+  numPlayers: number;
 
-  constructor(io: Server, roomId: string, cooldown?: number) {
+  constructor(io: Server, roomId: string, numPlayers: number, cooldown?: number) {
     this.io = io;
     this.roomId = roomId;
-    this.cooldown = cooldown;
+    this.numPlayers = numPlayers;
+    this.cooldown = cooldown ?? 5;
+
+    if (numPlayers === 1) {
+      const colour = 'b';
+      const instance = this.blackChess;
+      const oppositeInstance = this.whiteChess;
+      const timer = new PlayerTimer(colour, this.io, this.roomId, this.cooldown);
+      
+      this.botData = new Player(colour, instance, oppositeInstance, timer, this.io, this.roomId);
+    }
   }
 
   addToPlayerMap(socket: Socket): Player {
@@ -37,13 +49,13 @@ class Room {
   addPlayer(socket: Socket) {
     socket.join(this.roomId);
 
-    if (this.playerMap.size < 2) {
+    if (this.playerMap.size < this.numPlayers) {
       const player = this.addToPlayerMap(socket);
 
-      socket.emit('Player', { colour: player.colour, bothConnected: this.playerMap.size === 2 });
+      socket.emit('Player', { colour: player.colour, bothConnected: this.playerMap.size === this.numPlayers });
       socket.emit('Board', player.instance.fen());
 
-      if (this.playerMap.size === 2) {
+      if (this.playerMap.size === this.numPlayers) {
         this.startGame();
       }
 
@@ -85,6 +97,20 @@ class Room {
         this.gameInProgress = true;
       }
     }, 1000);
+
+    if (this.botData) {
+      const botData = this.botData;
+      let botThinkingTime = 6000;
+      const botLogic = () => {
+        if (this.gameInProgress) {
+          this.gameInProgress = botData.randomMove();
+          botThinkingTime = (this.cooldown + Math.floor(Math.random() * Math.floor(this.cooldown/2)) + 1)*1000;
+          setTimeout(botLogic, botThinkingTime);
+        }
+      };
+
+      setTimeout(botLogic, botThinkingTime);
+    }
   }
 
   resetGame() {

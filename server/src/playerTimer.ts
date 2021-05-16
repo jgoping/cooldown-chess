@@ -7,11 +7,11 @@ class PlayerTimer {
   roomId: string;
   timeLeft = 0;
 
-  constructor(colour: string, io: Server, roomId: string, cooldown?: number) {
+  constructor(colour: string, io: Server, roomId: string, cooldown: number) {
     this.colour = colour;
     this.io = io;
     this.roomId = roomId;
-    this.cooldown = cooldown ?? 5;
+    this.cooldown = cooldown;
   }
 
   start() {

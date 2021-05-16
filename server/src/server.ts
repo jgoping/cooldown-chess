@@ -23,9 +23,11 @@ const generateRoomId = () => {
 
 app.get('/create-room', (req, res) => {
   const roomId = generateRoomId();
+  
+  const numPlayers = typeof req.query.numPlayers === 'string' ? parseInt(req.query.numPlayers) : 2;
   const cooldown = typeof req.query.cooldown === 'string' ? parseInt(req.query.cooldown) : undefined;
   
-  roomMap.set(roomId, new Room(io, roomId, cooldown));
+  roomMap.set(roomId, new Room(io, roomId, numPlayers, cooldown));
   res.send({ 'roomId': roomId });
 });
 
