@@ -2,32 +2,39 @@ import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 
+import { getValue } from './utils';
 import HomeCard from './HomeCard';
 import HomeCardActions from './HomeCardActions';
 import HomeCardContent from './HomeCardContent';
 import Logo from './logo';
 import logoSrc from './logo.png';
-import { getValue } from './utils';
+import Option from './Option';
+import OptionFormControl from './OptionFormControl';
 
 interface CreateRoomResponse {
   roomId: string;
 };
 
 export const Home = (props: any) => {
+  const [numPlayers, setNumPlayers] = React.useState(1);
   const [cooldown, setCooldown] = React.useState(5);
 
-  const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+  const handleNumPlayersChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setNumPlayers(getValue(event));
+  };
+
+  const handleCooldownChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setCooldown(getValue(event));
   };
 
   const onClick = async () => {
     const params = {
+      numPlayers,
       cooldown
     };
 
@@ -42,24 +49,45 @@ export const Home = (props: any) => {
 
       <HomeCard>
         <HomeCardContent>
-          <Typography variant="body1" component="p">Choose how many seconds to wait between moves:</Typography>
-          <FormControl variant="filled" fullWidth={true} >
-            <InputLabel id="demo-simple-select-filled-label">
-              Cooldown
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
-              value={cooldown}
-              onChange={handleChange}
-              label="Cooldown"
-            >
-              <MenuItem value={1}>1</MenuItem>
-              <MenuItem value={3}>3</MenuItem>
-              <MenuItem value={5}>5</MenuItem>
-              <MenuItem value={10}>10</MenuItem>
-            </Select>
-          </FormControl>
+          <Option>
+            <Typography variant="body1" component="p">Choose what opponent you will play:</Typography>
+            <OptionFormControl variant="filled">
+              <InputLabel id="demo-simple-select-filled-label">
+                Opponent
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-filled-label"
+                id="demo-simple-select-filled"
+                value={numPlayers}
+                onChange={handleNumPlayersChange}
+                label="Opponent"
+              >
+                <MenuItem value={1}>Bot</MenuItem>
+                <MenuItem value={2}>Human</MenuItem>
+              </Select>
+            </OptionFormControl>
+          </Option>
+
+          <Option>
+            <Typography variant="body1" component="p">Choose how many seconds to wait between moves:</Typography>
+            <OptionFormControl variant="filled">
+              <InputLabel id="demo-simple-select-filled-label">
+                Cooldown
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-filled-label"
+                id="demo-simple-select-filled"
+                value={cooldown}
+                onChange={handleCooldownChange}
+                label="Cooldown"
+              >
+                <MenuItem value={1}>1</MenuItem>
+                <MenuItem value={3}>3</MenuItem>
+                <MenuItem value={5}>5</MenuItem>
+                <MenuItem value={10}>10</MenuItem>
+              </Select>
+            </OptionFormControl>
+          </Option>
         </HomeCardContent>
         <HomeCardActions>
           <Button variant="contained" onClick={onClick}>Create Room</Button>
