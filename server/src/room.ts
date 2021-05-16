@@ -1,15 +1,9 @@
-import { Chess, ChessInstance } from "chess.js";
+import { Chess } from "chess.js";
 import { Server, Socket } from "socket.io";
 
+import Player from './player';
 import PlayerTimer from './playerTimer';
 import { checkGameOver, switchTurn } from './utils';
-
-interface PlayerData {
-  colour: string,
-  instance: ChessInstance,
-  oppositeInstance: ChessInstance,
-  timer: PlayerTimer
-};
 
 class Room {
   whiteChess = new Chess();
@@ -26,14 +20,14 @@ class Room {
     this.cooldown = cooldown;
   }
 
-  addToPlayerMap(socket: Socket): PlayerData {
+  addToPlayerMap(socket: Socket): Player {
     const index = this.playerMap.size;
     const colour = index === 0 ? 'w' : 'b';
     const instance = index === 0 ? this.whiteChess : this.blackChess;
     const oppositeInstance = index === 0 ? this.blackChess : this.whiteChess;
     const timer = new PlayerTimer(colour, this.io, this.roomId, this.cooldown);
 
-    const player = { colour, instance, oppositeInstance, timer };
+    const player = new Player(colour, instance, oppositeInstance, timer, this.io, this.roomId, socket);
 
     this.playerMap.set(socket, player);
 
@@ -44,35 +38,18 @@ class Room {
     socket.join(this.roomId);
 
     if (this.playerMap.size < 2) {
-      const playerData = this.addToPlayerMap(socket);
+      const player = this.addToPlayerMap(socket);
 
-      socket.emit('Player', { colour: playerData.colour, bothConnected: this.playerMap.size === 2 });
-      socket.emit('Board', playerData.instance.fen());
+      socket.emit('Player', { colour: player.colour, bothConnected: this.playerMap.size === 2 });
+      socket.emit('Board', player.instance.fen());
 
       if (this.playerMap.size === 2) {
         this.startGame();
       }
 
       socket.on('Move', (data) => {
-        if (this.gameInProgress && playerData.timer.canMove()) {
-          const result = playerData.instance.move({ from: data.sourceSquare, to: data.targetSquare });
-
-          if (result) {
-            playerData.timer.start();
-            const curFen = playerData.instance.fen();
-
-            playerData.instance.load(switchTurn(curFen));
-            playerData.oppositeInstance.load(curFen);
-
-              const gameOverData = checkGameOver(this.whiteChess.board());
-            if (gameOverData.gameOver) {
-              this.gameInProgress = false;
-              this.io.to(this.roomId).emit('GameOver', gameOverData.winner);
-            }
-
-            socket.emit('Board', playerData.instance.fen());
-            socket.to(this.roomId).emit('Board', playerData.oppositeInstance.fen());
-          }
+        if (this.gameInProgress && player.timer.canMove()) {
+          this.gameInProgress = player.move(data.sourceSquare, data.targetSquare);
         }
       });
 
@@ -86,7 +63,7 @@ class Room {
       socket.on('Surrender', () => {
         if (this.gameInProgress) {
           this.gameInProgress = false;
-          this.io.to(this.roomId).emit('GameOver', playerData.colour !== 'w' ? 'w' : 'b');
+          this.io.to(this.roomId).emit('GameOver', player.colour !== 'w' ? 'w' : 'b');
         }
       });
     } else {
@@ -114,9 +91,9 @@ class Room {
     this.whiteChess.reset();
     this.blackChess.load(switchTurn(this.whiteChess.fen()));
 
-    for (const [socket, playerData] of this.playerMap.entries()) {
-      playerData.timer.reset();
-      playerData.colour === 'b' ? socket.emit('Board', playerData.instance.fen())
+    for (const [socket, player] of this.playerMap.entries()) {
+      player.timer.reset();
+      player.colour === 'b' ? socket.emit('Board', player.instance.fen())
                                 : this.io.to(this.roomId).emit('Board', this.whiteChess.fen());
     }
   }
