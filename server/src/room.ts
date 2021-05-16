@@ -2,7 +2,7 @@ import { Chess, ChessInstance } from "chess.js";
 import { Server, Socket } from "socket.io";
 
 import PlayerTimer from './playerTimer';
-import { switchTurn } from './utils';
+import { checkGameOver, switchTurn } from './utils';
 
 interface PlayerData {
   colour: string,
@@ -40,24 +40,6 @@ class Room {
     return player;
   }
 
-  checkGameOver() {
-    const board = this.whiteChess.board();
-    let containsWhiteKing = false;
-    let containsBlackKing = false;
-    board.forEach((row) => {
-      row.forEach((square) => {
-        if (square && square.type === 'k') {
-          square.color === 'w' ? containsWhiteKing = true : containsBlackKing = true;
-        }
-      })
-    });
-
-    return {
-      gameOver: !containsWhiteKing || !containsBlackKing,
-      winner: containsWhiteKing ? 'w' : 'b'
-    };
-  }
-
   addPlayer(socket: Socket) {
     socket.join(this.roomId);
 
@@ -82,7 +64,7 @@ class Room {
             playerData.instance.load(switchTurn(curFen));
             playerData.oppositeInstance.load(curFen);
 
-            const gameOverData = this.checkGameOver();
+              const gameOverData = checkGameOver(this.whiteChess.board());
             if (gameOverData.gameOver) {
               this.gameInProgress = false;
               this.io.to(this.roomId).emit('GameOver', gameOverData.winner);
