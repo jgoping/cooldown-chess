@@ -1,21 +1,21 @@
 {
   "files": {
     "main.css": "/cooldown-chess/static/css/main.592b0710.chunk.css",
-    "main.js": "/cooldown-chess/static/js/main.30b9d124.chunk.js",
-    "main.js.map": "/cooldown-chess/static/js/main.30b9d124.chunk.js.map",
+    "main.js": "/cooldown-chess/static/js/main.b0de7c22.chunk.js",
+    "main.js.map": "/cooldown-chess/static/js/main.b0de7c22.chunk.js.map",
     "runtime-main.js": "/cooldown-chess/static/js/runtime-main.e3a1092a.js",
     "runtime-main.js.map": "/cooldown-chess/static/js/runtime-main.e3a1092a.js.map",
-    "static/js/2.9bb51680.chunk.js": "/cooldown-chess/static/js/2.9bb51680.chunk.js",
-    "static/js/2.9bb51680.chunk.js.map": "/cooldown-chess/static/js/2.9bb51680.chunk.js.map",
+    "static/js/2.2885215e.chunk.js": "/cooldown-chess/static/js/2.2885215e.chunk.js",
+    "static/js/2.2885215e.chunk.js.map": "/cooldown-chess/static/js/2.2885215e.chunk.js.map",
     "index.html": "/cooldown-chess/index.html",
     "static/css/main.592b0710.chunk.css.map": "/cooldown-chess/static/css/main.592b0710.chunk.css.map",
-    "static/js/2.9bb51680.chunk.js.LICENSE.txt": "/cooldown-chess/static/js/2.9bb51680.chunk.js.LICENSE.txt",
+    "static/js/2.2885215e.chunk.js.LICENSE.txt": "/cooldown-chess/static/js/2.2885215e.chunk.js.LICENSE.txt",
     "static/media/logo.5cabee29.png": "/cooldown-chess/static/media/logo.5cabee29.png"
   },
   "entrypoints": [
     "static/js/runtime-main.e3a1092a.js",
-    "static/js/2.9bb51680.chunk.js",
+    "static/js/2.2885215e.chunk.js",
     "static/css/main.592b0710.chunk.css",
-    "static/js/main.30b9d124.chunk.js"
+    "static/js/main.b0de7c22.chunk.js"
   ]
 }
