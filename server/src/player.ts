@@ -51,6 +51,14 @@ class Player {
 
     return gameInProgress;
   }
+
+  randomMove() {
+    const moves = this.instance.moves({ verbose: true })
+    if (moves.length > 0) {
+      const move = moves[Math.floor(Math.random() * moves.length)];
+      this.move(move.from, move.to);
+    }
+  }
 }
 
 export default Player;
