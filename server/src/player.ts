@@ -26,7 +26,7 @@ class Player {
   move(sourceSquare: Square, targetSquare: Square): boolean {
     let gameInProgress = true;
 
-    const result = this.instance.move({ from: sourceSquare, to: targetSquare });
+    const result = this.instance.move({ from: sourceSquare, to: targetSquare, promotion: 'q' });
 
     if (result) {
       this.timer.start();
